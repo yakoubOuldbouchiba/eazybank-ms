@@ -1,10 +1,6 @@
 server:
-  port: 8090
+  port: 9000
 spring:
-  application:
-    name: "loans"
-  profiles:
-    active: "prod"
   datasource:
     url: jdbc:h2:mem:testdb
     driverClassName: org.h2.Driver
@@ -18,13 +14,10 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-  config:
-    import: "optional:configserver:http://localhost:8071/"
-
 build:
   version: "3.0"
 
-loans:
+cards:
   message: "Welcome to EazyBank accounts related local APIs"
   contactDetails:
     name: "John Doe - Developer"
