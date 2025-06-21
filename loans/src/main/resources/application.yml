@@ -20,7 +20,11 @@ spring:
     show-sql: true
   config:
     import: "optional:configserver:http://localhost:8071/"
-
+  rabbitmq:
+    host: "localhost"
+    port: 5672
+    username: guest
+    password: guest
 build:
   version: "3.0"
 
@@ -32,3 +36,9 @@ loans:
   onCallSupport:
     - (555) 555-1234
     - (555) 555-1235
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
