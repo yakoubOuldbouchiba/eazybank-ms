@@ -78,7 +78,7 @@
 				<version>3.4.5</version>
 				<configuration>
 					<to>
-						<image>yakoubouldbouchiba/${project.artifactId}:s6</image>
+						<image>yakoubouldbouchiba/${project.artifactId}:s7</image>
 					</to>
 				</configuration>
 			</plugin>

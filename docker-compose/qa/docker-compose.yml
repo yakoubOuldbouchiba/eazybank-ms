@@ -1,4 +1,31 @@
 services:
+  accountsdb-ms:
+    container_name: accountsdb
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: accountsdb
+    extends:
+      file: common-config.yml
+      service: microservice-db-config
+  loansdb-ms:
+    container_name: loansdb
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_DATABASE: loansdb
+    extends:
+      file: common-config.yml
+      service: microservice-db-config
+  cardsdb-ms:
+    container_name: cardsdb
+    ports:
+      - 3308:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    extends:
+      file: common-config.yml
+      service: microservice-db-config
   rabbit:
     image: rabbitmq:3.13-management
     hostname: rabbitmq
@@ -16,7 +43,7 @@ services:
       service: network-deploy-service
 
   configserver:
-    image: "yakoubouldbouchiba/configserver:s6"
+    image: "yakoubouldbouchiba/configserver:s7"
     container_name: configserver-ms
     ports:
       - "8071:8071"
@@ -34,26 +61,31 @@ services:
       service: microservice-base-config
 
   accounts:
-    image: "yakoubouldbouchiba/accounts:s6"
+    image: "yakoubouldbouchiba/accounts:s7"
     container_name: accounts-ms
     ports:
       - "8080:8080"
     depends_on:
       configserver:
         condition: service_healthy
+      accountsdb-ms:
+        condition: service_healthy
     environment:
       SPRING_APPLICATION_NAME: "accounts"
+      SPRING_DATASOURCE_URL: jdbc:mysql://accountsdb-ms:3306/accountsdb
     extends:
       file: common-config.yml
       service: microservice-configserver-config
 
   loans:
-    image: "yakoubouldbouchiba/loans:s6"
+    image: "yakoubouldbouchiba/loans:s7"
     container_name: loans-ms
     ports:
       - "8090:8090"
     depends_on:
       configserver:
+        condition: service_healthy
+      loansdb-ms:
         condition: service_healthy
     deploy:
       resources:
@@ -61,17 +93,20 @@ services:
           memory: 700m
     environment:
       SPRING_APPLICATION_NAME: "loans"
+      SPRING_DATASOURCE_URL: jdbc:mysql://loansdb-ms:3306/accountsdb
     extends:
       file: common-config.yml
       service: microservice-configserver-config
 
   cards:
-    image: "yakoubouldbouchiba/cards:s6"
+    image: "yakoubouldbouchiba/cards:s7"
     container_name: cards-ms
     ports:
       - "9000:9000"
     depends_on:
       configserver:
+        condition: service_healthy
+      cardsdb-ms:
         condition: service_healthy
     deploy:
       resources:
@@ -79,6 +114,7 @@ services:
           memory: 700m
     environment:
       SPRING_APPLICATION_NAME: "cards"
+      SPRING_DATASOURCE_URL: jdbc:mysql://cardsdb-ms:3306/accountsdb
     extends:
       file: common-config.yml
       service: microservice-configserver-config
